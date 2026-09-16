@@ -11,8 +11,10 @@ require_once __DIR__ . '/config/database.php';
 require_once __DIR__ . '/models/Usuario.php';
 require_once __DIR__ . '/models/Minuta.php';
 require_once __DIR__ . '/models/Venta.php';
+require_once __DIR__ . '/models/Gasto.php';
 require_once __DIR__ . '/controllers/AuthController.php';
 require_once __DIR__ . '/controllers/VentaController.php';
+require_once __DIR__ . '/controllers/GastoController.php';
 
 // Carga condicional con verificación explícita
 $minutaCtrlFile = __DIR__ . '/controllers/MinutaController.php';
@@ -55,6 +57,7 @@ if (!$loggedIn) {
 try {
     $ventaCtrl = new VentaController(getDB());
     $minutaCtrl = new MinutaController(getDB());
+    $gastoCtrl = new GastoController(getDB());
 } catch (Throwable $e) {
     die('Error al instanciar controladores: ' . $e->getMessage());
 }
@@ -65,16 +68,40 @@ if ($page === 'ventas') {
         $ventaCtrl->store();
     } elseif ($action === 'reporte') {
         $ventaCtrl->reporte();
+    } elseif ($action === 'detalle') {
+        $ventaCtrl->detalle();
+    } elseif ($action === 'edit') {
+        $ventaCtrl->edit();
+    } elseif ($action === 'update') {
+        $ventaCtrl->update();
     } else {
         $ventaCtrl->index();
     }
 } elseif ($page === 'minutas') {
-    if ($action === 'edit') {
+    if ($action === 'create') {
+        $minutaCtrl->create();
+    } elseif ($action === 'store' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+        $minutaCtrl->store();
+    } elseif ($action === 'edit') {
         $minutaCtrl->edit();
     } elseif ($action === 'update') {
         $minutaCtrl->update();
     } else {
         $minutaCtrl->index();
+    }
+} elseif ($page === 'gastos') {
+    if ($action === 'create') {
+        $gastoCtrl->create();
+    } elseif ($action === 'store') {
+        $gastoCtrl->store();
+    } elseif ($action === 'edit') {
+        $gastoCtrl->edit();
+    } elseif ($action === 'update') {
+        $gastoCtrl->update();
+    } elseif ($action === 'reporte') {
+        $gastoCtrl->reporte();
+    } else {
+        $gastoCtrl->index();
     }
 } else {
     header('Location: index.php?page=ventas');
